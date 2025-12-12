@@ -2,46 +2,51 @@
 
 ## Project Overview
 
-This repository contains the modeling and analysis of a personalized online learning course scenario, conducted as a project for the **Business Project Modelling** course at the University of Pisa (Academic Year 2024/2025).
+This repository contains the modeling and analysis of a personalized online learning course scenario, developed as a project for the **Business Project Modelling** course at the **University of Pisa** (Academic Year 2024/2025).
 
-The goal was to model the end-to-end learning process, including administrative, scheduling, and educational phases, using **BPMN (Business Process Model and Notation)** and then translate the models into **Workflow Nets (WF-nets)** to formally verify their behavioral properties (soundness, boundedness, and liveness).
+The project focuses on modeling the end-to-end learning process—including administrative, scheduling, and educational phases—using **BPMN (Business Process Model and Notation)**. The models were subsequently translated into **Workflow Nets (WF-nets)** to formally verify their behavioral properties, such as soundness, boundedness, and liveness.
 
-The process involves three main actors: the **Student**, the **Teacher**, and the **School's Secretariat**.
+## Scenario & Actors
 
-## Process Phases
+The process involves three main actors:
+1.  **Student:** The primary initiator who selects courses, pays installments, and interacts with the teacher.
+2.  **Teacher:** Responsible for scheduling, delivering lessons, assigning exercises, and evaluating the student.
+3.  **School's Secretariat:** Manages the initial course list, teacher assignment, and final certification.
 
-The overall process is divided into the following phases:
+### Process Phases
+The workflow is divided into the following logical phases:
+* **Initialization:** Course selection, teacher assignment, and first payment.
+* **Scheduling:** Negotiation of the lesson calendar between Student and Teacher.
+* **Lesson Execution:** The core loop of teaching, Q&A, and exercise assignment.
+* **Post-Lesson Interaction:** Asynchronous chat and material study.
+* **Iteration Control:** Decision point to continue lessons or proceed to the exam.
+* **Final Examination:** Assessment, grading, final payment, and certification.
 
-1.  [cite_start]**Initialization Phase:** Student contacts the Secretariat, receives the course list, selects a course, gets assigned a Teacher, and makes the first installment payment. [cite: 40, 42]
-2.  [cite_start]**Scheduling Phase:** Iterative exchange between the Teacher (proposing the schedule) and the Student (accepting or requesting changes) until the meeting schedule is fixed. [cite: 44, 47]
-3.  [cite_start]**Lesson Execution Phase:** The core educational loop, including concept explanation, student questions, exercise attempts, and material upload by the Teacher. [cite: 48, 56]
-4.  [cite_start]**Post-Lesson Interaction:** The Student reviews materials and interacts with the Teacher via chat until the materials consultation is complete. [cite: 60, 63]
-5.  [cite_start]**Lesson Iteration Control:** The Teacher checks the calendar to proceed to the next lesson or transition to the Final Examination Phase. [cite: 65, 67]
-6.  [cite_start]**Final Examination Phase:** Teacher assesses the student, formulates a grade, and communicates it to the Secretariat, followed by the Student's final installment and receipt of the certificate. [cite: 70, 72]
+## Tools Used
 
-## Modeling and Analysis Tools
+* **Modeling:** [Camunda Modeler](https://camunda.com/) (for BPMN Collaboration Diagrams)
+* **Analysis:** [WoPeD](https://woped.dhbw-karlsruhe.de/) (Workflow Petri Net Designer for WF-net analysis)
 
-* [cite_start]**BPMN Modeling:** Camunda Modeler [cite: 32]
-* [cite_start]**Workflow Net Analysis:** WoPeD (Workflow Petri Net Designer) [cite: 90]
+## Analysis Results
 
-## Analysis Results Summary
+The project involved creating a BPMN collaboration diagram and converting it into Workflow Nets. Below are the quantitative and qualitative analysis results for each component.
 
-The process was modeled as a **BPMN Collaboration Diagram**  involving two Pools (Student and School, with two Lanes for Secretariat and Teacher). These were then translated into individual Workflow Nets for the School and the Student, and finally combined into a Workflow Module.
+### 1. Individual Workflow Nets
+The BPMN pools were converted into separate WF-nets for the School (Teacher + Secretariat) and the Student.
 
-### Individual Workflow Net Analysis (WF-nets)
-
-| Model | Places | Transitions | Arcs | Soundness Check | Key Properties |
+| Model | Places | Transitions | Arcs | Soundness | Properties |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **School** | 41 | 46 | 92 | **✔ Sound** | Bounded, Live, Properly Initialized. [cite_start]No free-choice violations. [cite: 122, 124, 159] |
-| **Student (Base)** | 43 | 47 | 96 | **✔ Sound** | Bounded, Live, Properly Initialized. [cite_start]No free-choice violations. [cite: 127, 129, 185] |
-| **Student (Variant)** | 46 | 51 | 104 | **✔ Sound** | Includes optional restart mechanism. [cite_start]Bounded, Live, Free-choice, Well-structured. [cite: 133, 135] |
+| **School** | 41 | 46 | 92 | **✅ Sound** | Bounded, Live, Well-structured. |
+| **Student (Base)** | 43 | 47 | 96 | **✅ Sound** | Bounded, Live, Well-structured. |
+| **Student (Variant)** | 46 | 51 | 104 | **✅ Sound** | Includes optional restart mechanism. Bounded, Live. |
 
-### Workflow Module Analysis (Integrated Model)
+### 2. Workflow Module (Integrated Analysis)
+The **Student Variant** and **School** nets were combined into a single **Workflow Module** to verify the compatibility of the message exchanges and the overall process synchronization.
 
-The Workflow Module combines the **School WF-net** and the **Student Variant WF-net** to verify compatibility and synchronization. [cite_start]This variant was chosen as it represents the most complete process, including the optional restart mechanism. [cite: 216, 219]
+* **Overall Result:** **✅ Sound**
+* **Boundedness:** The net is bounded (no infinite token accumulation).
+* **Liveness:** The net is live (no dead transitions).
+* **Structural Notes:** The complex interaction resulted in 6 free-choice violations and several PT/TP handles, indicating shared resources/paths. However, the semantic analysis confirmed that these did not negatively impact the logical correctness or reachability of the final state.
 
-* [cite_start]**Overall Result:** **✔ Sound** (Bounded and Live) [cite: 220, 221, 249]
-* [cite_start]**Structural Note:** The analysis reported **6 Free-choice violations** and high numbers of PT-Handles (218) and TP-Handles (227). [cite: 222, 237, 247, 248]
-* [cite_start]**Interpretation:** Despite the structural complexity indicated by the handles (shared input places reducing independence), the overall process is sound, meaning every execution can reach the final marking and no deadlocks occur. [cite: 224, 229] [cite_start]The cycles in the coverability graph reflect the correct implementation of the restart mechanism and repeated interactions. [cite: 227]
-
-## 📂 Repository Structure (Suggested)
+## Conclusion
+The modeling and analysis confirm that the proposed process for the personalized online learning course is robust. Both the individual processes and their composition are sound, bounded, and live, ensuring that every student who begins the course can successfully complete it (or restart it) without encountering deadlocks or synchronization errors.
